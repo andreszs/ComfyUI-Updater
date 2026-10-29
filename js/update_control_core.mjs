@@ -25,6 +25,13 @@ export function actionKeepsCompatiblePair(action, state) {
     return action === "update_both" || action === "repair_frontend";
 }
 
+export function shouldOfferPairedUpdate(state) {
+    return Boolean(
+        state?.core_update_available
+        && state?.frontend?.update_available
+    );
+}
+
 export function updateResultSummary(operation) {
     if (!operation) {
         return {

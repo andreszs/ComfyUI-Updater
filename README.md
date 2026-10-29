@@ -17,12 +17,29 @@ ComfyUI Updater adds a native **Updates** section to ComfyUI Settings. It manage
 - Separate **Update Core** and **Update Frontend** actions.
 - Recommended **Update both** action for the tested Core/frontend version pair.
 - Per-component **Up to date** and **Update needed** badges.
-- Installed, latest, and sourced release-date metadata.
+- Installed and latest versions with their release dates.
 - Compatibility warning and frontend restore action when the installed pair does not match.
 - Blocking, restart-aware update screen that keeps the user informed while ComfyUI is unavailable.
 - Plain-language environment health check with optional technical details.
 - Before/after comparison that distinguishes existing package warnings from problems introduced by an update.
 - Recovery branch, requirements snapshot, update log, and rollback before ComfyUI is relaunched.
+
+## Preview
+
+<p align="center">
+  <img src="docs/images/update-panel.png" alt="ComfyUI Updater showing Core and Frontend updates" width="900" />
+</p>
+
+<table>
+  <tr>
+    <td width="50%"><img src="docs/images/update-progress.png" alt="Blocking update progress while ComfyUI restarts" /></td>
+    <td width="50%"><img src="docs/images/update-complete.png" alt="Successful update result after restart" /></td>
+  </tr>
+  <tr>
+    <td align="center">The interface stays blocked and explains the automatic restart.</td>
+    <td align="center">The result is shown after the updated backend is ready.</td>
+  </tr>
+</table>
 
 ## Install
 

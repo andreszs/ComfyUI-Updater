@@ -10,6 +10,7 @@ import {
     actionKeepsCompatiblePair,
     hasCompletedUpdate,
     nextPollDelay,
+    shouldOfferPairedUpdate,
     updateResultSummary,
 } from "../../js/update_control_core.mjs";
 
@@ -49,6 +50,25 @@ test("individual update confirmations identify compatible target pairs", () => {
     assert.equal(actionKeepsCompatiblePair("repair_frontend", state), true);
 });
 
+test("paired update is offered only when both components are outdated", () => {
+    assert.equal(shouldOfferPairedUpdate({
+        core_update_available: true,
+        frontend: { update_available: true },
+    }), true);
+    assert.equal(shouldOfferPairedUpdate({
+        core_update_available: true,
+        frontend: { update_available: false },
+    }), false);
+    assert.equal(shouldOfferPairedUpdate({
+        core_update_available: false,
+        frontend: { update_available: true },
+    }), false);
+    assert.equal(shouldOfferPairedUpdate({
+        core_update_available: false,
+        frontend: { update_available: false },
+    }), false);
+});
+
 test("post-restart summaries distinguish success and recovery outcomes", () => {
     assert.equal(updateResultSummary({ state: "completed" }).tone, "success");
     assert.equal(
@@ -70,12 +90,15 @@ test("native settings panel exposes only Core and frontend actions", () => {
     assert.doesNotMatch(frontend, /startAction\("(?:update_)?custom|node manager/i);
 });
 
-test("cards show status, sourced dates, and concise update actions", () => {
+test("cards show status, release dates, and concise update actions", () => {
     assert.match(frontend, /"Update needed"/);
     assert.match(frontend, /"Up to date"/);
     assert.match(frontend, /data-core-released/);
     assert.match(frontend, /data-frontend-released/);
     assert.match(frontend, /bothButton\.textContent = "Update both"/);
+    assert.match(frontend, /data-update-both-card hidden/);
+    assert.match(frontend, /bothCard\.hidden = !pairedUpdateAvailable/);
+    assert.doesNotMatch(frontend, /data-release-date-source|Dates: Core/);
     assert.match(stylesheet, /grid-template-columns:\s*repeat\(2, minmax\(0, 1fr\)\)/);
 });
 

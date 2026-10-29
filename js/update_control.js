@@ -7,6 +7,7 @@ import {
     actionKeepsCompatiblePair,
     hasCompletedUpdate,
     nextPollDelay,
+    shouldOfferPairedUpdate,
     updateResultSummary,
 } from "./update_control_core.mjs";
 
@@ -14,7 +15,7 @@ if (!document.getElementById("andreszs-update-control-styles")) {
     const stylesheet = document.createElement("link");
     stylesheet.id = "andreszs-update-control-styles";
     stylesheet.rel = "stylesheet";
-    stylesheet.href = new URL("./update_control.css?v=0.1.1-dev3", import.meta.url).href;
+    stylesheet.href = new URL("./update_control.css?v=0.1.1", import.meta.url).href;
     document.head.append(stylesheet);
 }
 
@@ -396,6 +397,7 @@ function renderState(root, state) {
     const coreButton = root.querySelector("[data-update-core]");
     const frontendButton = root.querySelector("[data-update-frontend]");
     const bothButton = root.querySelector("[data-update-both]");
+    const bothCard = root.querySelector("[data-update-both-card]");
     const repairButton = root.querySelector("[data-frontend-repair]");
     root.querySelector("[data-update-check]").dataset.disabled = "false";
     renderEnvironmentHealth(root, state);
@@ -406,6 +408,7 @@ function renderState(root, state) {
         for (const button of [coreButton, frontendButton, bothButton, repairButton]) {
             button.hidden = true;
         }
+        bothCard.hidden = true;
         return;
     }
 
@@ -418,13 +421,6 @@ function renderState(root, state) {
     setText(root, "[data-frontend-target]", state.frontend.target || state.latest.frontend);
     setText(root, "[data-frontend-released]", formatReleaseDate(state.frontend.target_published_at));
     setText(root, "[data-pair-target]", `Tested pair: Core ${state.latest.version} · Frontend ${state.frontend.target}`);
-    setText(
-        root,
-        "[data-release-date-source]",
-        state.latest.date_source === "git_tag"
-            ? "Dates: Core tagged commit · Frontend PyPI release."
-            : "Dates: Core GitHub release · Frontend PyPI release.",
-    );
     setText(root, "[data-update-history]", lastOperationLabel(state.last_operation));
     setUpdateBadge(root, "[data-core-badge]", state.core_update_available);
     setUpdateBadge(root, "[data-frontend-badge]", state.frontend.update_available);
@@ -439,7 +435,9 @@ function renderState(root, state) {
     frontendButton.disabled = !state.frontend_update_allowed;
     frontendButton.textContent = "Update Frontend";
 
-    bothButton.hidden = !state.combined_update_available;
+    const pairedUpdateAvailable = shouldOfferPairedUpdate(state);
+    bothCard.hidden = !pairedUpdateAvailable;
+    bothButton.hidden = !pairedUpdateAvailable;
     bothButton.dataset.disabled = String(!state.combined_update_allowed);
     bothButton.disabled = !state.combined_update_allowed;
     bothButton.textContent = "Update both";
@@ -458,8 +456,12 @@ function renderState(root, state) {
 
     if (state.current.dirty) {
         setText(root, "[data-update-message]", "Core updates are blocked by tracked local changes; Frontend can still be updated separately.");
-    } else if (state.combined_update_available) {
+    } else if (pairedUpdateAvailable) {
         setText(root, "[data-update-message]", "Updates are available. Choose either component or the recommended paired update.");
+    } else if (state.core_update_available) {
+        setText(root, "[data-update-message]", "A Core update is available.");
+    } else if (state.frontend.update_available) {
+        setText(root, "[data-update-message]", "A Frontend update is available.");
     } else {
         setText(root, "[data-update-message]", "Core and Frontend are up to date.");
     }
@@ -615,7 +617,7 @@ function renderUpdateSettings() {
                 <button type="button" class="andreszs-card-action" data-update-frontend hidden>Update Frontend</button>
             </article>
         </div>
-        <aside class="andreszs-update-recommendation">
+        <aside class="andreszs-update-recommendation" data-update-both-card hidden>
             <div>
                 <strong>Update both together</strong>
                 <span class="andreszs-update-pair-target" data-pair-target>Reading target pair…</span>
@@ -651,7 +653,6 @@ function renderUpdateSettings() {
         <div class="andreszs-update-control-status">
             <p class="andreszs-update-control-message" data-update-message>Reading local versions…</p>
             <p class="andreszs-update-control-history" data-update-history></p>
-            <p class="andreszs-update-control-source" data-release-date-source>Checking authoritative release dates…</p>
         </div>
     `;
 

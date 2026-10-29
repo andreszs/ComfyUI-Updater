@@ -52,7 +52,6 @@
 .andreszs-update-control-card header span:not(.andreszs-update-badge),
 .andreszs-update-control-card dt,
 .andreszs-update-control-history,
-.andreszs-update-control-source,
 .andreszs-update-recommendation span {
     color: var(--descrip-text, #aaa);
     font-size: 0.8rem;
@@ -281,10 +280,6 @@
 .andreszs-update-control-message,
 .andreszs-update-control-history {
     margin: 0;
-}
-
-.andreszs-update-control-source {
-    margin: 0.25rem 0 0;
 }
 
 .andreszs-update-control-message.is-error {
