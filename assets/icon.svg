@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" role="img" aria-labelledby="title desc">
   <title id="title">ComfyUI Updater icon</title>
-  <desc id="desc">UP monogram in cyan, blue, and mint green.</desc>
+  <desc id="desc">CU monogram in cyan, blue, and mint green.</desc>
   <defs>
     <linearGradient id="panel" x1="42" y1="32" x2="360" y2="370" gradientUnits="userSpaceOnUse">
       <stop stop-color="#062d39"/>
@@ -14,9 +14,7 @@
   </defs>
   <rect width="400" height="400" rx="88" fill="#11131a"/>
   <rect x="28" y="28" width="344" height="344" rx="72" fill="url(#panel)" stroke="url(#accent)" stroke-width="10"/>
-  <path d="M110 116a108 108 0 0 1 180 0" fill="none" stroke="url(#accent)" stroke-width="12" stroke-linecap="round" opacity=".72"/>
-  <path d="m286 91 8 34-35-5" fill="none" stroke="#34d399" stroke-width="12" stroke-linecap="round" stroke-linejoin="round"/>
-  <text x="200" y="260" fill="url(#accent)" font-family="Arial, Helvetica, sans-serif" font-size="142" font-weight="800" letter-spacing="-8" text-anchor="middle">UP</text>
+  <text x="200" y="252" fill="url(#accent)" font-family="Arial, Helvetica, sans-serif" font-size="150" font-weight="800" letter-spacing="-8" text-anchor="middle">CU</text>
   <circle cx="86" cy="314" r="9" fill="#22d3ee"/>
   <circle cx="116" cy="314" r="9" fill="#3b82f6"/>
   <path d="M146 314h168" stroke="url(#accent)" stroke-width="10" stroke-linecap="round" opacity=".58"/>
