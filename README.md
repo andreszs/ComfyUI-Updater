@@ -30,17 +30,6 @@ ComfyUI Updater adds a native **Updates** section to ComfyUI Settings. It manage
   <img src="docs/images/update-panel.png" alt="ComfyUI Updater showing Core and Frontend updates" width="900" />
 </p>
 
-<table>
-  <tr>
-    <td width="50%"><img src="docs/images/update-progress.png" alt="Blocking update progress while ComfyUI restarts" /></td>
-    <td width="50%"><img src="docs/images/update-complete.png" alt="Successful update result after restart" /></td>
-  </tr>
-  <tr>
-    <td align="center">The interface stays blocked and explains the automatic restart.</td>
-    <td align="center">The result is shown after the updated backend is ready.</td>
-  </tr>
-</table>
-
 ## Installation
 
 ### Option 1: Native Extension Manager (recommended)
