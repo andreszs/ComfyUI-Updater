@@ -14,6 +14,7 @@
 - Global, non-dismissible update progress with restart detection and post-restart results.
 - Compatibility-aware confirmation text for individual component updates.
 - Automated Comfy Registry publishing when the project version changes on `main`.
+- Dedicated Comfy Registry icon and Extension Manager banner.
 
 ### Changed
 

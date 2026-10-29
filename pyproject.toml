@@ -24,6 +24,8 @@ Documentation = "https://github.com/andreszs/comfyui-updater#readme"
 [tool.comfy]
 PublisherId = "andreszs"
 DisplayName = "ComfyUI Updater"
+Icon = "https://raw.githubusercontent.com/andreszs/comfyui-updater/main/assets/icon.svg"
+Banner = "https://raw.githubusercontent.com/andreszs/comfyui-updater/main/assets/banner.png"
 
 [tool.ruff]
 line-length = 100
