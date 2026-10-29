@@ -1,5 +1,5 @@
 <div align="center">
-  <img alt="Version" src="https://img.shields.io/github/v/tag/andreszs/comfyui-updater?label=version" />
+  <img alt="Version" src="https://img.shields.io/github/v/tag/andreszs/comfyui-updater?label=version&amp;cacheSeconds=300&amp;release=v0.1.2" />
   <img alt="Last Commit" src="https://img.shields.io/github/last-commit/andreszs/comfyui-updater" />
   <img alt="License" src="https://img.shields.io/github/license/andreszs/comfyui-updater" />
 </div>
