@@ -1,3 +1,10 @@
+<p align="center">
+  <img alt="Version" src="https://img.shields.io/github/v/tag/andreszs/comfyui-updater?label=version" />
+  <img alt="Last Commit" src="https://img.shields.io/github/last-commit/andreszs/comfyui-updater" />
+  <img alt="License" src="https://img.shields.io/github/license/andreszs/comfyui-updater" />
+</p>
+<br />
+
 # ComfyUI Updater
 
 ComfyUI Updater adds a native **Updates** section to ComfyUI Settings. It manages only ComfyUI Core and the official frontend package; it does not inspect, install, or update custom nodes.
