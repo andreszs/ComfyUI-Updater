@@ -21,6 +21,7 @@
 
 - Show the paired update card only when both Core and Frontend need updates.
 - Keep release provenance in the component date labels instead of a redundant footer.
+- Document installation through ComfyUI's native Extension Manager.
 
 ## [0.1.0] - 2026-10-29
 

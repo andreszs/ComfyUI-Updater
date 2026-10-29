@@ -41,15 +41,25 @@ ComfyUI Updater adds a native **Updates** section to ComfyUI Settings. It manage
   </tr>
 </table>
 
-## Install
+## Installation
 
-Clone the repository into `ComfyUI/custom_nodes`:
+### Option 1: Native Extension Manager (recommended)
+
+1. Open ComfyUI's native **Extension Manager**, then open **Nodes Manager**.
+2. Search for `comfyui-updater` and select **ComfyUI Updater**.
+3. Click **Install**, restart ComfyUI when the installation finishes, and hard-refresh the browser once.
+
+Open **Settings → Updates** to use the updater.
+
+### Option 2: Manual installation
+
+Open a terminal in `ComfyUI/custom_nodes/` and clone the repository:
 
 ```bash
 git clone https://github.com/andreszs/comfyui-updater.git
 ```
 
-Restart ComfyUI and hard-refresh the browser once. Open **Settings → Updates**.
+Restart ComfyUI, hard-refresh the browser once, and open **Settings → Updates**.
 
 ## Update behavior
 
