@@ -5,7 +5,7 @@
 </div>
 <br />
 
-# 🔄 ComfyUI Updater
+# ComfyUI Updater 🔄
 
 ComfyUI Updater adds a native **Updates** section to ComfyUI Settings. It manages only ComfyUI Core and the official frontend package; it does not inspect, install, or update custom nodes.
 
