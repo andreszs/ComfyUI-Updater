@@ -48,13 +48,46 @@
     font-size: 1rem;
 }
 
-.andreszs-update-control-heading span,
 .andreszs-update-control-card header span:not(.andreszs-update-badge),
 .andreszs-update-control-card dt,
 .andreszs-update-control-history,
 .andreszs-update-recommendation span {
     color: var(--descrip-text, #aaa);
     font-size: 0.8rem;
+}
+
+.andreszs-update-github-link {
+    display: inline-flex;
+    align-items: center;
+    width: fit-content;
+    margin-left: -0.2rem;
+    padding: 0.15rem 0.25rem;
+    gap: 0.35rem;
+    border-radius: 0.35rem;
+    color: var(--p-primary-color, #60a5fa);
+    font-size: 0.78rem;
+    font-weight: 600;
+    line-height: 1.2;
+    text-decoration: none;
+}
+
+.andreszs-update-github-link svg {
+    flex: 0 0 auto;
+    width: 1rem;
+    height: 1rem;
+    fill: currentColor;
+}
+
+.andreszs-update-github-link:hover {
+    color: var(--p-primary-hover-color, #93c5fd);
+    background: color-mix(in srgb, var(--p-primary-color, #60a5fa) 12%, transparent);
+    text-decoration: underline;
+    text-underline-offset: 0.16em;
+}
+
+.andreszs-update-github-link:focus-visible {
+    outline: 2px solid var(--p-focus-ring-color, var(--p-primary-color, #60a5fa));
+    outline-offset: 2px;
 }
 
 .andreszs-update-control-grid {

@@ -102,6 +102,17 @@ test("cards show status, release dates, and concise update actions", () => {
     assert.match(stylesheet, /grid-template-columns:\s*repeat\(2, minmax\(0, 1fr\)\)/);
 });
 
+test("settings header links visibly and accessibly to the GitHub repository", () => {
+    assert.match(frontend, /href="https:\/\/github\.com\/andreszs\/comfyui-updater"/);
+    assert.match(frontend, /target="_blank"/);
+    assert.match(frontend, /rel="noopener noreferrer"/);
+    assert.match(frontend, /aria-label="View andreszs\/comfyui-updater on GitHub"/);
+    assert.match(frontend, /<svg viewBox="0 0 16 16" aria-hidden="true">/);
+    assert.match(stylesheet, /\.andreszs-update-github-link/);
+    assert.match(stylesheet, /color:\s*var\(--p-primary-color/);
+    assert.match(stylesheet, /\.andreszs-update-github-link:focus-visible/);
+});
+
 test("environment health explains warnings and automatic recovery", () => {
     assert.match(frontend, /Environment check/);
     assert.match(frontend, /warnings already exist/);

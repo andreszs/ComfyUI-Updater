@@ -582,6 +582,18 @@ function renderUpdateSettings() {
         <header class="andreszs-update-control-heading">
             <div>
                 <strong>ComfyUI Updater</strong>
+                <a
+                    class="andreszs-update-github-link"
+                    href="https://github.com/andreszs/comfyui-updater"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label="View andreszs/comfyui-updater on GitHub"
+                >
+                    <svg viewBox="0 0 16 16" aria-hidden="true">
+                        <path d="M8 0C3.58 0 0 3.64 0 8.13c0 3.59 2.29 6.64 5.47 7.71.4.08.55-.18.55-.39 0-.19-.01-.7-.01-1.38-2.23.49-2.7-1.09-2.7-1.09-.36-.94-.89-1.19-.89-1.19-.73-.5.05-.49.05-.49.81.06 1.23.84 1.23.84.72 1.25 1.88.89 2.34.68.07-.53.28-.89.51-1.09-1.78-.21-3.65-.9-3.65-4.02 0-.89.31-1.61.82-2.18-.08-.2-.36-1.03.08-2.15 0 0 .67-.22 2.2.83A7.55 7.55 0 0 1 8 3.94c.68 0 1.36.09 2 .27 1.53-1.05 2.2-.83 2.2-.83.44 1.12.16 1.95.08 2.15.51.57.82 1.29.82 2.18 0 3.13-1.88 3.81-3.67 4.01.29.25.54.75.54 1.51 0 1.09-.01 1.97-.01 2.24 0 .22.14.47.55.39A8.15 8.15 0 0 0 16 8.13C16 3.64 12.42 0 8 0Z"/>
+                    </svg>
+                    <span>andreszs/comfyui-updater</span>
+                </a>
             </div>
             <button type="button" data-update-check>Check for updates</button>
         </header>

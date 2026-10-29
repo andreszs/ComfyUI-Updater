@@ -15,6 +15,7 @@
 - Compatibility-aware confirmation text for individual component updates.
 - Automated Comfy Registry publishing when the project version changes on `main`.
 - Dedicated Comfy Registry icon and Extension Manager banner.
+- Theme-aware GitHub repository link in the Settings header.
 
 ### Changed
 
