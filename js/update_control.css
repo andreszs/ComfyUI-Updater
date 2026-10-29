@@ -1,0 +1,209 @@
+.form-label:has(+ .form-input .andreszs-update-control) {
+    display: none;
+}
+
+.form-input:has(.andreszs-update-control) {
+    flex: 1 1 100%;
+    min-width: 0;
+    justify-content: stretch;
+}
+
+.form-input:has(.andreszs-update-control) > * {
+    width: 100%;
+}
+
+.andreszs-update-control {
+    display: grid;
+    width: 100%;
+    min-width: 0;
+    gap: 0.85rem;
+    color: var(--fg-color, #ddd);
+}
+
+.andreszs-update-control-heading,
+.andreszs-update-control-card header,
+.andreszs-update-control-card dl > div,
+.andreszs-update-recommendation,
+.andreszs-update-compatibility {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+}
+
+.andreszs-update-control-heading > div,
+.andreszs-update-control-card header > div,
+.andreszs-update-recommendation > div {
+    display: grid;
+    gap: 0.2rem;
+}
+
+.andreszs-update-control-heading > div > strong {
+    font-size: 1rem;
+}
+
+.andreszs-update-control-heading span,
+.andreszs-update-control-card header span:not(.andreszs-update-badge),
+.andreszs-update-control-card dt,
+.andreszs-update-control-history,
+.andreszs-update-control-source,
+.andreszs-update-recommendation span {
+    color: var(--descrip-text, #aaa);
+    font-size: 0.8rem;
+}
+
+.andreszs-update-control-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.75rem;
+}
+
+.andreszs-update-control-card {
+    display: grid;
+    align-content: start;
+    min-width: 0;
+    padding: 1rem;
+    border: 1px solid var(--border-color, #454545);
+    border-radius: 0.7rem;
+    background: color-mix(in srgb, var(--comfy-input-bg, #202020) 72%, transparent);
+}
+
+.andreszs-update-control-card dl {
+    display: grid;
+    gap: 0.45rem;
+    margin: 0.9rem 0;
+}
+
+.andreszs-update-control-card dt,
+.andreszs-update-control-card dd {
+    margin: 0;
+}
+
+.andreszs-update-control-card dd[data-core-released],
+.andreszs-update-control-card dd[data-frontend-released] {
+    font-family: inherit;
+    font-size: 0.82rem;
+}
+
+.andreszs-update-control-card dd {
+    overflow: hidden;
+    font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
+    text-overflow: ellipsis;
+}
+
+.andreszs-update-badge {
+    flex: 0 0 auto;
+    padding: 0.25rem 0.5rem;
+    border: 1px solid var(--border-color, #555);
+    border-radius: 999px;
+    font-size: 0.72rem;
+    font-weight: 650;
+    line-height: 1;
+}
+
+.andreszs-update-badge.is-current {
+    border-color: rgb(52 211 153 / 45%);
+    color: #6ee7b7;
+    background: rgb(16 185 129 / 12%);
+}
+
+.andreszs-update-badge.is-needed {
+    border-color: rgb(251 191 36 / 48%);
+    color: #fcd34d;
+    background: rgb(245 158 11 / 12%);
+}
+
+.andreszs-update-control button {
+    min-height: 2.25rem;
+    padding: 0.45rem 0.8rem;
+    border: 1px solid var(--border-color, #555);
+    border-radius: 0.5rem;
+    color: var(--fg-color, #ddd);
+    background: var(--comfy-input-bg, #262626);
+    cursor: pointer;
+}
+
+.andreszs-update-control button:hover:not(:disabled) {
+    border-color: var(--p-primary-color, #60a5fa);
+}
+
+.andreszs-update-control button.is-primary {
+    border-color: var(--p-primary-color, #60a5fa);
+    color: var(--p-primary-contrast-color, #fff);
+    background: var(--p-primary-color, #3b82f6);
+}
+
+.andreszs-update-control button:disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
+}
+
+.andreszs-card-action {
+    width: 100%;
+    margin-top: auto;
+}
+
+.andreszs-update-recommendation {
+    padding: 0.8rem 0.9rem;
+    border: 1px solid rgb(96 165 250 / 42%);
+    border-radius: 0.65rem;
+    background: rgb(59 130 246 / 9%);
+}
+
+.andreszs-update-recommendation .andreszs-update-pair-target {
+    color: var(--fg-color, #ddd);
+    font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
+}
+
+.andreszs-update-recommendation > button {
+    min-width: 8rem;
+}
+
+.andreszs-update-compatibility {
+    padding: 0.65rem 0.8rem;
+    border-left: 3px solid #f59e0b;
+    color: #fcd34d;
+    background: rgb(245 158 11 / 8%);
+    font-size: 0.82rem;
+}
+
+.andreszs-update-control-status {
+    display: grid;
+    gap: 0.2rem;
+}
+
+.andreszs-update-control-message,
+.andreszs-update-control-history {
+    margin: 0;
+}
+
+.andreszs-update-control-source {
+    margin: 0.25rem 0 0;
+}
+
+.andreszs-update-control-message.is-error {
+    color: var(--error-text, #ff8b8b);
+}
+
+.andreszs-update-control [hidden] {
+    display: none !important;
+}
+
+@media (max-width: 52rem) {
+    .andreszs-update-control-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 38rem) {
+    .andreszs-update-control-heading,
+    .andreszs-update-recommendation,
+    .andreszs-update-compatibility {
+        align-items: stretch;
+        flex-direction: column;
+    }
+}
+
+
+
+

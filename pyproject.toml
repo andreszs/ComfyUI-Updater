@@ -1,0 +1,33 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "comfyui-updater"
+version = "0.1.0"
+description = "Independent Core and frontend updater for ComfyUI."
+readme = "README.md"
+requires-python = ">=3.10"
+license = { file = "LICENSE" }
+dependencies = ["comfyui-frontend-package>=1.6.13"]
+classifiers = [
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+]
+
+[project.urls]
+Repository = "https://github.com/andreszs/comfyui-updater"
+Documentation = "https://github.com/andreszs/comfyui-updater#readme"
+"Bug Tracker" = "https://github.com/andreszs/comfyui-updater/issues"
+
+[tool.comfy]
+PublisherId = "andreszs"
+DisplayName = "ComfyUI Updater"
+
+[tool.ruff]
+line-length = 100
+target-version = "py310"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP"]

@@ -1,0 +1,9 @@
+{
+  "name": "comfyui-updater-tests",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "lint": "node --check js/update_control.js && node --check js/update_control_core.mjs",
+    "test": "node --test tests/frontend/*.test.mjs"
+  }
+}
