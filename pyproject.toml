@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "comfyui-updater"
-version = "0.1.1"
+version = "0.1.2"
 description = "Independent Core and frontend updater for ComfyUI."
 readme = "README.md"
 requires-python = ">=3.10"

@@ -2,6 +2,17 @@
 
 ## [Unreleased]
 
+## [0.1.2] - 2026-10-29
+
+### Added
+
+- Collapsible, theme-aware support module with GitHub, Ko-fi, PayPal, and USDC actions.
+- README table of contents and project support information.
+
+### Changed
+
+- Removed the active-development warning from the README.
+
 ## [0.1.1] - 2026-10-29
 
 ### Added

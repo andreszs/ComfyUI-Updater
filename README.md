@@ -7,10 +7,22 @@
 
 # ComfyUI Updater 🔄
 
-> [!WARNING]
-> **Active development:** This plugin is still under active development and is not yet recommended for production environments. Back up your ComfyUI installation before testing update operations.
-
 ComfyUI Updater adds a native **Updates** section to ComfyUI Settings. It manages only ComfyUI Core and the official frontend package; it does not inspect, install, or update custom nodes.
+
+## Contents
+
+- [Features](#features)
+- [Preview](#preview)
+- [Installation](#installation)
+  - [Native Extension Manager](#option-1-native-extension-manager-recommended)
+  - [Manual installation](#option-2-manual-installation)
+- [Update behavior](#update-behavior)
+- [Release dates](#release-dates)
+- [Recovery](#recovery)
+- [Security](#security)
+- [Support](#support)
+- [Development](#development)
+- [License](#license)
 
 ## Features
 
@@ -23,6 +35,7 @@ ComfyUI Updater adds a native **Updates** section to ComfyUI Settings. It manage
 - Plain-language environment health check with optional technical details.
 - Before/after comparison that distinguishes existing package warnings from problems introduced by an update.
 - Recovery branch, requirements snapshot, update log, and rollback before ComfyUI is relaunched.
+- Collapsible support module with GitHub, Ko-fi, PayPal, and USDC actions.
 
 ## Preview
 
@@ -82,6 +95,19 @@ ComfyUI/user/default/ComfyUI-Updater/updates
 ## Security
 
 Every boot creates a random update token. Mutation requests require same-origin JSON, the token in a custom header, and one server-selected action. The browser cannot submit Git refs, filesystem paths, packages, or commands.
+
+## Support
+
+If ComfyUI Updater is useful to you, consider [starring the repository](https://github.com/andreszs/comfyui-updater). Stars help other ComfyUI users discover the project.
+
+Financial contributions help cover the tools used to develop, maintain, and test this and other open-source ComfyUI extensions:
+
+- [Ko-fi](https://ko-fi.com/D1D716OLPM)
+- [PayPal](https://www.paypal.com/ncp/payment/GEEM324PDD9NC)
+- **USDC on Arbitrum One:** `0xe36a336fC6cc9Daae657b4A380dA492AB9601e73`
+
+> [!CAUTION]
+> Send USDC using the Arbitrum One network only. Transfers sent through another network may be permanently lost.
 
 ## Development
 

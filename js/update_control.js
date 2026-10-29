@@ -15,7 +15,7 @@ if (!document.getElementById("andreszs-update-control-styles")) {
     const stylesheet = document.createElement("link");
     stylesheet.id = "andreszs-update-control-styles";
     stylesheet.rel = "stylesheet";
-    stylesheet.href = new URL("./update_control.css?v=0.1.1", import.meta.url).href;
+    stylesheet.href = new URL("./update_control.css?v=support-module-1", import.meta.url).href;
     document.head.append(stylesheet);
 }
 
@@ -23,6 +23,12 @@ const UPDATE_SLOW_THRESHOLD_MS = 15 * 60 * 1000;
 const ROLLBACK_PREFERENCE_KEY = "andreszs.ComfyUIUpdater.rollbackOnConflicts";
 const UPDATE_SESSION_KEY = "andreszs.ComfyUIUpdater.activeUpdate";
 const UPDATE_OVERLAY_ID = "andreszs-update-overlay";
+const SUPPORT_INFO = Object.freeze({
+    repository: "https://github.com/andreszs/comfyui-updater",
+    kofi: "https://ko-fi.com/D1D716OLPM",
+    paypal: "https://www.paypal.com/ncp/payment/GEEM324PDD9NC",
+    usdcAddress: "0xe36a336fC6cc9Daae657b4A380dA492AB9601e73",
+});
 const SETTINGS_SESSIONS = new WeakMap();
 let updateGuardActive = false;
 
@@ -80,6 +86,51 @@ async function readJson(response, context) {
         throw new Error(detail);
     }
     return response.json();
+}
+
+async function copySupportText(value) {
+    if (navigator.clipboard?.writeText) {
+        try {
+            await navigator.clipboard.writeText(value);
+            return;
+        } catch {
+            // Fall back to the legacy copy command when clipboard permission is denied.
+        }
+    }
+
+    const textarea = document.createElement("textarea");
+    textarea.value = value;
+    textarea.readOnly = true;
+    textarea.style.position = "fixed";
+    textarea.style.opacity = "0";
+    textarea.style.pointerEvents = "none";
+    document.body.append(textarea);
+    textarea.select();
+    const copied = typeof document.execCommand === "function" && document.execCommand("copy");
+    textarea.remove();
+    if (!copied) throw new Error("Clipboard access is unavailable");
+}
+
+function setupSupportModule(root) {
+    const copyButton = root.querySelector("[data-support-usdc]");
+    const status = root.querySelector("[data-support-status]");
+    if (!copyButton || !status) return;
+
+    copyButton.addEventListener("click", async () => {
+        copyButton.disabled = true;
+        try {
+            await copySupportText(SUPPORT_INFO.usdcAddress);
+            status.textContent = "USDC address copied. Send on Arbitrum One only.";
+            status.classList.remove("is-error");
+            status.classList.add("is-success");
+        } catch {
+            status.textContent = `Copy failed. Address: ${SUPPORT_INFO.usdcAddress}`;
+            status.classList.remove("is-success");
+            status.classList.add("is-error");
+        } finally {
+            copyButton.disabled = false;
+        }
+    });
 }
 
 async function fetchCapabilities() {
@@ -666,6 +717,34 @@ function renderUpdateSettings() {
             <p class="andreszs-update-control-message" data-update-message>Reading local versions…</p>
             <p class="andreszs-update-control-history" data-update-history></p>
         </div>
+        <details class="andreszs-support-module">
+            <summary>
+                <span>
+                    <strong>Support this project</strong>
+                    <small>Star the repository or help fund continued development.</small>
+                </span>
+                <span class="andreszs-support-chevron" aria-hidden="true">›</span>
+            </summary>
+            <div class="andreszs-support-content">
+                <p>If ComfyUI Updater saves you time, a GitHub star helps others discover it. Financial contributions help cover the tools used to maintain and test the project.</p>
+                <div class="andreszs-support-actions">
+                    <a
+                        class="andreszs-support-action is-star"
+                        href="${SUPPORT_INFO.repository}"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        aria-label="Star comfyui-updater on GitHub"
+                    >
+                        <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 0.75a.75.75 0 0 1 .673.418l1.882 3.813 4.208.612a.75.75 0 0 1 .416 1.279l-3.045 2.968.719 4.19a.75.75 0 0 1-1.088.79L8 12.841 4.235 14.82a.75.75 0 0 1-1.088-.79l.719-4.19L.821 6.872a.75.75 0 0 1 .416-1.279l4.208-.612 1.882-3.813A.75.75 0 0 1 8 .75Z"/></svg>
+                        <span>Star on GitHub</span>
+                    </a>
+                    <a class="andreszs-support-action" href="${SUPPORT_INFO.kofi}" target="_blank" rel="noopener noreferrer">Ko-fi</a>
+                    <a class="andreszs-support-action" href="${SUPPORT_INFO.paypal}" target="_blank" rel="noopener noreferrer">PayPal</a>
+                    <button type="button" class="andreszs-support-action" data-support-usdc>Copy USDC address</button>
+                </div>
+                <p class="andreszs-support-status" data-support-status role="status" aria-live="polite">USDC contributions use Arbitrum One only.</p>
+            </div>
+        </details>
     `;
 
     let capabilities = null;
@@ -676,6 +755,7 @@ function renderUpdateSettings() {
     rollbackOption.addEventListener("change", () => {
         writeRollbackPreference(rollbackOption.checked);
     });
+    setupSupportModule(root);
     const refresh = async (remote) => {
         session ||= settingsSession(root);
         if (!remote && session.state && session.capabilities) {

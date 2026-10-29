@@ -22,6 +22,10 @@ const stylesheet = await readFile(
     new URL("../../js/update_control.css", import.meta.url),
     "utf8",
 );
+const readme = await readFile(
+    new URL("../../README.md", import.meta.url),
+    "utf8",
+);
 
 test("standalone routes use an isolated namespace", () => {
     assert.equal(CAPABILITIES_ROUTE, "/comfyui-updater/capabilities");
@@ -111,6 +115,26 @@ test("settings header links visibly and accessibly to the GitHub repository", ()
     assert.match(stylesheet, /\.andreszs-update-github-link/);
     assert.match(stylesheet, /color:\s*var\(--p-primary-color/);
     assert.match(stylesheet, /\.andreszs-update-github-link:focus-visible/);
+});
+
+test("support module offers repository stars and the established contribution channels", () => {
+    assert.match(frontend, /Support this project/);
+    assert.match(frontend, /Star on GitHub/);
+    assert.match(frontend, /https:\/\/ko-fi\.com\/D1D716OLPM/);
+    assert.match(frontend, /https:\/\/www\.paypal\.com\/ncp\/payment\/GEEM324PDD9NC/);
+    assert.match(frontend, /0xe36a336fC6cc9Daae657b4A380dA492AB9601e73/);
+    assert.match(frontend, /navigator\.clipboard\?\.writeText/);
+    assert.match(frontend, /document\.execCommand\("copy"\)/);
+    assert.match(frontend, /USDC contributions use Arbitrum One only/);
+    assert.match(stylesheet, /\.andreszs-support-module/);
+    assert.match(stylesheet, /var\(--p-primary-color/);
+});
+
+test("README has navigation and support information without the development warning", () => {
+    assert.match(readme, /## Contents/);
+    assert.match(readme, /\[Support\]\(#support\)/);
+    assert.match(readme, /## Support/);
+    assert.doesNotMatch(readme, /Active development/);
 });
 
 test("environment health explains warnings and automatic recovery", () => {
