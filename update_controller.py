@@ -73,6 +73,21 @@ def _version_key(value: str | None) -> tuple[int, int, int] | None:
     return tuple(map(int, match.groups())) if match else None
 
 
+def dependency_issues(output: str) -> list[str]:
+    """Return stable, human-inspectable issue lines from ``pip check`` output."""
+    ignored = {"no broken requirements found."}
+    return sorted(
+        {
+            line.strip()
+            for line in output.splitlines()
+            if line.strip()
+            and line.strip().casefold() not in ignored
+            and not line.strip().casefold().startswith(("[notice]", "warning:"))
+        },
+        key=str.casefold,
+    )
+
+
 class UpdateError(RuntimeError):
     pass
 
@@ -151,6 +166,49 @@ class UpdateController:
                 raise UpdateError("ComfyUI requirements.txt was not found")
             return requirements_path.read_text(encoding="utf-8")
         return self._git("show", f"{reference}:requirements.txt")
+
+    def _dependency_health(self) -> dict[str, Any]:
+        checked_at = datetime.now(timezone.utc).isoformat()
+        try:
+            result = self._run(
+                [self.executable, "-s", "-m", "pip", "check"],
+                cwd=self.comfy_root,
+                capture_output=True,
+                text=True,
+                timeout=60,
+                check=False,
+            )
+        except (OSError, subprocess.SubprocessError) as error:
+            return {
+                "available": False,
+                "status": "unavailable",
+                "issue_count": None,
+                "issues": [],
+                "checked_at": checked_at,
+                "error": str(error),
+            }
+
+        output = "\n".join(
+            part.strip() for part in (result.stdout, result.stderr) if part and part.strip()
+        )
+        if result.returncode not in {0, 1}:
+            return {
+                "available": False,
+                "status": "unavailable",
+                "issue_count": None,
+                "issues": [],
+                "checked_at": checked_at,
+                "error": output or f"Environment check exited with code {result.returncode}",
+            }
+
+        issues = dependency_issues(output)
+        return {
+            "available": True,
+            "status": "healthy" if not issues else "warnings",
+            "issue_count": len(issues),
+            "issues": issues,
+            "checked_at": checked_at,
+        }
 
     def _last_operation(self) -> dict[str, Any] | None:
         if not self.state_root.is_dir():
@@ -278,10 +336,12 @@ class UpdateController:
         return dates
 
     def status(self, *, refresh: bool = False) -> dict[str, Any]:
+        environment = self._dependency_health()
         if not (self.comfy_root / ".git").exists():
             return {
                 "supported": False,
                 "error": "ComfyUI is not installed from Git",
+                "environment": environment,
                 "last_operation": self._last_operation(),
             }
 
@@ -372,6 +432,7 @@ class UpdateController:
                 "update_available": update_available,
                 "update_allowed": update_available and not dirty,
                 "blocked_reason": blocked_reason,
+                "environment": environment,
                 "last_operation": self._last_operation(),
             }
         except UpdateError as error:
@@ -379,6 +440,7 @@ class UpdateController:
                 "supported": False,
                 "error": str(error),
                 "checked_at": self._last_checked_at,
+                "environment": environment,
                 "last_operation": self._last_operation(),
             }
 
@@ -386,6 +448,7 @@ class UpdateController:
         self,
         *,
         action: str,
+        rollback_on_conflicts: bool = False,
         launch_argv: list[str],
         launch_cwd: str,
     ) -> dict[str, str]:
@@ -423,6 +486,11 @@ class UpdateController:
         shutil.copy2(self.comfy_root / "requirements.txt", requirements_before)
         worker_path = job_root / "update_worker.py"
         shutil.copy2(Path(__file__).with_name("update_worker.py"), worker_path)
+        environment_before = state.get("environment") or self._dependency_health()
+        environment_before_path = job_root / "environment.before.json"
+        environment_before_path.write_text(
+            json.dumps(environment_before, indent=2), encoding="utf-8"
+        )
         core_requirements_path = None
         if action == "update_core":
             core_requirements_path = job_root / "requirements.core.txt"
@@ -445,11 +513,14 @@ class UpdateController:
                 state["latest"]["version"] if action in core_actions else None
             ),
             "required_frontend": required_frontend,
+            "rollback_on_conflicts": rollback_on_conflicts,
             "core_requirements": (
                 str(core_requirements_path.resolve())
                 if core_requirements_path is not None
                 else None
             ),
+            "environment_before": environment_before,
+            "environment_before_path": str(environment_before_path.resolve()),
             "status_path": str((job_root / "status.json").resolve()),
             "log_path": str((job_root / "update.log").resolve()),
         }
@@ -463,6 +534,8 @@ class UpdateController:
                 "state": "scheduled",
                 "target": plan["target_ref"],
                 "frontend": required_frontend,
+                "rollback_on_conflicts": rollback_on_conflicts,
+                "environment_before": environment_before,
                 "updated_at": datetime.now(timezone.utc).isoformat(),
             },
         )

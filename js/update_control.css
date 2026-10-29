@@ -16,7 +16,7 @@
     display: grid;
     width: 100%;
     min-width: 0;
-    gap: 0.85rem;
+    gap: 0.6rem;
     color: var(--fg-color, #ddd);
 }
 
@@ -24,7 +24,8 @@
 .andreszs-update-control-card header,
 .andreszs-update-control-card dl > div,
 .andreszs-update-recommendation,
-.andreszs-update-compatibility {
+.andreszs-update-compatibility,
+.andreszs-environment-health > header {
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -34,6 +35,11 @@
 .andreszs-update-control-heading > div,
 .andreszs-update-control-card header > div,
 .andreszs-update-recommendation > div {
+    display: grid;
+    gap: 0.2rem;
+}
+
+.andreszs-environment-health > header > div {
     display: grid;
     gap: 0.2rem;
 }
@@ -62,7 +68,7 @@
     display: grid;
     align-content: start;
     min-width: 0;
-    padding: 1rem;
+    padding: 0.8rem;
     border: 1px solid var(--border-color, #454545);
     border-radius: 0.7rem;
     background: color-mix(in srgb, var(--comfy-input-bg, #202020) 72%, transparent);
@@ -70,8 +76,8 @@
 
 .andreszs-update-control-card dl {
     display: grid;
-    gap: 0.45rem;
-    margin: 0.9rem 0;
+    gap: 0.35rem;
+    margin: 0.6rem 0;
 }
 
 .andreszs-update-control-card dt,
@@ -113,8 +119,31 @@
     background: rgb(245 158 11 / 12%);
 }
 
+.andreszs-update-badge.is-healthy {
+    border-color: rgb(52 211 153 / 45%);
+    color: #6ee7b7;
+    background: rgb(16 185 129 / 12%);
+}
+
+.andreszs-update-badge.is-warning {
+    border-color: rgb(251 191 36 / 48%);
+    color: #fcd34d;
+    background: rgb(245 158 11 / 12%);
+}
+
+.andreszs-update-badge.is-danger {
+    border-color: rgb(248 113 113 / 52%);
+    color: #fca5a5;
+    background: rgb(239 68 68 / 12%);
+}
+
+.andreszs-update-badge.is-unknown {
+    color: var(--descrip-text, #aaa);
+    background: rgb(148 163 184 / 8%);
+}
+
 .andreszs-update-control button {
-    min-height: 2.25rem;
+    min-height: 2.1rem;
     padding: 0.45rem 0.8rem;
     border: 1px solid var(--border-color, #555);
     border-radius: 0.5rem;
@@ -144,7 +173,7 @@
 }
 
 .andreszs-update-recommendation {
-    padding: 0.8rem 0.9rem;
+    padding: 0.65rem 0.8rem;
     border: 1px solid rgb(96 165 250 / 42%);
     border-radius: 0.65rem;
     background: rgb(59 130 246 / 9%);
@@ -165,6 +194,83 @@
     color: #fcd34d;
     background: rgb(245 158 11 / 8%);
     font-size: 0.82rem;
+}
+
+.andreszs-environment-health {
+    display: grid;
+    gap: 0.35rem;
+    padding: 0.65rem 0.8rem;
+    border: 1px solid var(--border-color, #454545);
+    border-radius: 0.65rem;
+    background: color-mix(in srgb, var(--comfy-input-bg, #202020) 60%, transparent);
+}
+
+.andreszs-update-safety-option {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.6rem;
+    padding: 0.65rem 0.8rem;
+    border: 1px solid var(--border-color, #454545);
+    border-radius: 0.65rem;
+    background: color-mix(in srgb, var(--comfy-input-bg, #202020) 50%, transparent);
+    cursor: pointer;
+}
+
+.andreszs-update-safety-option input {
+    flex: 0 0 auto;
+    width: 1rem;
+    height: 1rem;
+    margin: 0.15rem 0 0;
+}
+
+.andreszs-update-safety-option > span {
+    display: grid;
+    gap: 0.15rem;
+}
+
+.andreszs-update-safety-option small {
+    color: var(--descrip-text, #aaa);
+    font-size: 0.78rem;
+    line-height: 1.25;
+}
+
+.andreszs-environment-health header span:not(.andreszs-update-badge),
+.andreszs-environment-health p,
+.andreszs-environment-health details {
+    color: var(--descrip-text, #aaa);
+    font-size: 0.8rem;
+}
+
+.andreszs-environment-health p {
+    margin: 0;
+}
+
+.andreszs-environment-health [data-environment-summary] {
+    color: var(--fg-color, #ddd);
+    font-size: 0.88rem;
+}
+
+.andreszs-environment-recommendation {
+    line-height: 1.4;
+}
+
+.andreszs-environment-health summary {
+    color: var(--fg-color, #ddd);
+    cursor: pointer;
+}
+
+.andreszs-environment-health details p {
+    margin-top: 0.35rem;
+}
+
+.andreszs-environment-health ul {
+    display: grid;
+    gap: 0.35rem;
+    margin: 0.35rem 0 0;
+    padding-left: 1.2rem;
+    overflow-wrap: anywhere;
+    font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
+    font-size: 0.75rem;
 }
 
 .andreszs-update-control-status {
@@ -189,6 +295,121 @@
     display: none !important;
 }
 
+body.andreszs-update-locked {
+    overflow: hidden;
+}
+
+.andreszs-update-overlay {
+    position: fixed;
+    z-index: 2147483647;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    padding: 1.25rem;
+    color: var(--fg-color, #eee);
+    background: rgb(5 7 10 / 78%);
+    backdrop-filter: blur(5px);
+}
+
+.andreszs-update-progress-dialog {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    gap: 1rem;
+    width: min(34rem, 100%);
+    padding: 1.35rem;
+    border: 1px solid var(--border-color, #505050);
+    border-radius: 0.85rem;
+    box-shadow: 0 1.25rem 4rem rgb(0 0 0 / 48%);
+    background: var(--comfy-menu-bg, var(--comfy-input-bg, #1d1d1d));
+}
+
+.andreszs-update-progress-copy {
+    display: grid;
+    min-width: 0;
+    gap: 0.55rem;
+}
+
+.andreszs-update-progress-eyebrow {
+    color: var(--descrip-text, #aaa);
+    font-size: 0.75rem;
+    font-weight: 650;
+    letter-spacing: 0.045em;
+    text-transform: uppercase;
+}
+
+.andreszs-update-progress-dialog h2,
+.andreszs-update-progress-dialog p {
+    margin: 0;
+}
+
+.andreszs-update-progress-dialog h2 {
+    font-size: 1.15rem;
+}
+
+.andreszs-update-progress-status {
+    color: var(--p-primary-color, #7cb8ff);
+    font-weight: 650;
+}
+
+.andreszs-update-progress-notice {
+    color: var(--descrip-text, #bbb);
+    font-size: 0.87rem;
+    line-height: 1.45;
+}
+
+.andreszs-update-spinner {
+    width: 1.45rem;
+    height: 1.45rem;
+    margin-top: 0.15rem;
+    border: 3px solid rgb(148 163 184 / 24%);
+    border-top-color: var(--p-primary-color, #60a5fa);
+    border-radius: 50%;
+    animation: andreszs-update-spin 0.85s linear infinite;
+}
+
+.andreszs-update-overlay.is-result .andreszs-update-progress-dialog {
+    grid-template-columns: 1fr;
+}
+
+.andreszs-update-overlay.is-success .andreszs-update-progress-dialog {
+    border-color: rgb(52 211 153 / 55%);
+}
+
+.andreszs-update-overlay.is-warning .andreszs-update-progress-dialog {
+    border-color: rgb(251 191 36 / 58%);
+}
+
+.andreszs-update-overlay.is-danger .andreszs-update-progress-dialog {
+    border-color: rgb(248 113 113 / 62%);
+}
+
+.andreszs-update-result-actions {
+    grid-column: 1 / -1;
+    justify-self: end;
+}
+
+.andreszs-update-result-actions button {
+    min-height: 2.25rem;
+    padding: 0.45rem 1rem;
+    border: 1px solid var(--p-primary-color, #60a5fa);
+    border-radius: 0.5rem;
+    color: var(--p-primary-contrast-color, #fff);
+    background: var(--p-primary-color, #3b82f6);
+    cursor: pointer;
+}
+
+@keyframes andreszs-update-spin {
+    to {
+        transform: rotate(1turn);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .andreszs-update-spinner {
+        animation-duration: 1.8s;
+    }
+}
+
 @media (max-width: 52rem) {
     .andreszs-update-control-grid {
         grid-template-columns: 1fr;
@@ -198,9 +419,14 @@
 @media (max-width: 38rem) {
     .andreszs-update-control-heading,
     .andreszs-update-recommendation,
-    .andreszs-update-compatibility {
+    .andreszs-update-compatibility,
+    .andreszs-environment-health > header {
         align-items: stretch;
         flex-direction: column;
+    }
+
+    .andreszs-update-progress-dialog {
+        grid-template-columns: 1fr;
     }
 }
 

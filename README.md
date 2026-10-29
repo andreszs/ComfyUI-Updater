@@ -19,6 +19,9 @@ ComfyUI Updater adds a native **Updates** section to ComfyUI Settings. It manage
 - Per-component **Up to date** and **Update needed** badges.
 - Installed, latest, and sourced release-date metadata.
 - Compatibility warning and frontend restore action when the installed pair does not match.
+- Blocking, restart-aware update screen that keeps the user informed while ComfyUI is unavailable.
+- Plain-language environment health check with optional technical details.
+- Before/after comparison that distinguishes existing package warnings from problems introduced by an update.
 - Recovery branch, requirements snapshot, update log, and rollback before ComfyUI is relaunched.
 
 ## Install
@@ -46,7 +49,13 @@ For Core, the plugin uses the published GitHub Release date when the tag has a r
 
 ## Recovery
 
-Before a Core update, the worker creates a recovery branch and stores the previous requirements. If Git checkout or dependency installation fails, it restores the previous commit and requirements before relaunching ComfyUI.
+Before an update, the plugin records the environment's existing package compatibility warnings. Before a Core update, the worker also creates a recovery branch and stores the previous requirements.
+
+After installation, the same compatibility check runs again. Existing warnings do not block an update. An optional checkbox can make the worker treat new warnings as a failed update and attempt recovery before relaunching ComfyUI. When disabled, new warnings are reported without reverting the completed update. A Git or package-installation failure is always treated as an incomplete update and triggers recovery.
+
+Recovery returns Core to its previous Git commit and reinstalls the previous Core requirements or Frontend version. It does not restore models, custom nodes, workflows, settings, CUDA, GPU drivers, or an exact copy of every indirect Python package. The Settings panel reports whether recovery was verified, could not be verified, or failed.
+
+This check covers installed Python package requirements. It cannot guarantee CUDA, GPU drivers, native DLLs, models, workflows, or third-party extensions will work at runtime, so the plugin reports this limitation without asking non-technical users to repair packages manually.
 
 Status, cache, and logs are stored under:
 

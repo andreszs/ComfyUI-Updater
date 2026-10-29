@@ -141,7 +141,7 @@ class UpdateEndpointTests(unittest.IsolatedAsyncioTestCase):
         )
         accepted = await self.client.post(
             update_server.UPDATE_PATH,
-            json={"action": "update_both"},
+            json={"action": "update_both", "rollback_on_conflicts": True},
             headers={
                 "Origin": self.origin,
                 update_server.TOKEN_HEADER: self.runtime.token,
@@ -153,6 +153,12 @@ class UpdateEndpointTests(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(accepted.status, 202)
         self.assertEqual((await accepted.json())["job_id"], "job-test")
         self.assertTrue(self.runtime.handoff_accepted)
+        self.updater.prepare.assert_called_once_with(
+            action="update_both",
+            rollback_on_conflicts=True,
+            launch_argv=["main.py", "--disable-auto-launch"],
+            launch_cwd=os.getcwd(),
+        )
 
 
 class UpdateControllerTests(unittest.TestCase):
@@ -189,6 +195,31 @@ class UpdateControllerTests(unittest.TestCase):
                 "git@github.com:comfyanonymous/ComfyUI.git"
             ),
             ("comfyanonymous", "ComfyUI"),
+        )
+
+    def test_dependency_health_reports_only_package_conflicts(self):
+        result = Mock(
+            returncode=1,
+            stdout=(
+                "alpha 1.0 requires shared<2, but you have shared 3.0.\n"
+                "[notice] A new release of pip is available.\n"
+            ),
+            stderr="",
+        )
+        controller = update_controller.UpdateController(
+            comfy_root=PROJECT_ROOT,
+            command_runner=Mock(return_value=result),
+            executable="python-test",
+        )
+
+        health = controller._dependency_health()
+
+        self.assertTrue(health["available"])
+        self.assertEqual(health["status"], "warnings")
+        self.assertEqual(health["issue_count"], 1)
+        self.assertEqual(
+            health["issues"],
+            ["alpha 1.0 requires shared<2, but you have shared 3.0."],
         )
 
     def test_release_dates_use_github_and_first_non_yanked_pypi_upload(self):
@@ -256,10 +287,17 @@ class UpdateControllerTests(unittest.TestCase):
                 Path(plan["core_requirements"]).read_text(encoding="utf-8"),
                 "torch\n",
             )
+            self.assertIn("environment_before", plan)
+            self.assertTrue(Path(plan["environment_before_path"]).is_file())
 
 
 class UpdateWorkerTests(unittest.TestCase):
-    def _plan(self, root: Path, action: str = "update_both") -> Path:
+    def _plan(
+        self,
+        root: Path,
+        action: str = "update_both",
+        rollback_on_conflicts: bool = False,
+    ) -> Path:
         plan = {
             "job_id": "job-test",
             "action": action,
@@ -272,7 +310,14 @@ class UpdateWorkerTests(unittest.TestCase):
             "requirements_before": str(root / "requirements.before.txt"),
             "target_ref": "v1.1.0",
             "required_frontend": "1.1.0",
+            "rollback_on_conflicts": rollback_on_conflicts,
             "core_requirements": str(root / "requirements.core.txt"),
+            "environment_before": {
+                "available": True,
+                "status": "warnings",
+                "issue_count": 1,
+                "issues": ["existing conflict"],
+            },
             "status_path": str(root / "status.json"),
             "log_path": str(root / "update.log"),
         }
@@ -292,6 +337,14 @@ class UpdateWorkerTests(unittest.TestCase):
                         self._plan(root, action="update_frontend"),
                         runner=runner,
                         execv=execv,
+                        dependency_checker=Mock(
+                            return_value={
+                                "available": True,
+                                "status": "warnings",
+                                "issue_count": 1,
+                                "issues": ["existing conflict"],
+                            }
+                        ),
                     )
             finally:
                 os.chdir(previous_cwd)
@@ -299,6 +352,104 @@ class UpdateWorkerTests(unittest.TestCase):
             commands = [call.args[0] for call in runner.call_args_list]
             self.assertEqual(len(commands), 1)
             self.assertIn("comfyui-frontend-package==1.1.0", commands[0])
+
+    def test_new_dependency_conflict_triggers_automatic_rollback(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            commands = []
+            checks = iter(
+                [
+                    {
+                        "available": True,
+                        "status": "warnings",
+                        "issue_count": 2,
+                        "issues": ["existing conflict", "new conflict"],
+                    },
+                    {
+                        "available": True,
+                        "status": "warnings",
+                        "issue_count": 1,
+                        "issues": ["existing conflict"],
+                    },
+                ]
+            )
+
+            def runner(command, **kwargs):
+                commands.append(command)
+
+            previous_cwd = Path.cwd()
+            try:
+                with self.assertRaises(SystemExit):
+                    update_worker.run(
+                        self._plan(root, rollback_on_conflicts=True),
+                        runner=runner,
+                        execv=Mock(side_effect=SystemExit),
+                        dependency_checker=Mock(side_effect=lambda **kwargs: next(checks)),
+                    )
+            finally:
+                os.chdir(previous_cwd)
+
+            status = loads((root / "status.json").read_text())
+            self.assertEqual(status["state"], "rolled_back")
+            self.assertEqual(status["environment_delta"]["new"], ["new conflict"])
+            self.assertEqual(status["rollback_environment"]["issues"], ["existing conflict"])
+            self.assertIn(["git", "checkout", "--detach", "old-commit"], commands)
+
+    def test_new_dependency_conflict_is_reported_without_optional_rollback(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            commands = []
+            health = {
+                "available": True,
+                "status": "warnings",
+                "issue_count": 2,
+                "issues": ["existing conflict", "new conflict"],
+            }
+
+            def runner(command, **kwargs):
+                commands.append(command)
+
+            previous_cwd = Path.cwd()
+            try:
+                with self.assertRaises(SystemExit):
+                    update_worker.run(
+                        self._plan(root, rollback_on_conflicts=False),
+                        runner=runner,
+                        execv=Mock(side_effect=SystemExit),
+                        dependency_checker=Mock(return_value=health),
+                    )
+            finally:
+                os.chdir(previous_cwd)
+
+            status = loads((root / "status.json").read_text())
+            self.assertEqual(status["state"], "completed")
+            self.assertEqual(status["environment_delta"]["new"], ["new conflict"])
+            self.assertNotIn(["git", "checkout", "--detach", "old-commit"], commands)
+
+    def test_successful_update_records_environment_comparison(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            health = {
+                "available": True,
+                "status": "warnings",
+                "issue_count": 1,
+                "issues": ["existing conflict"],
+            }
+            previous_cwd = Path.cwd()
+            try:
+                with self.assertRaises(SystemExit):
+                    update_worker.run(
+                        self._plan(root),
+                        runner=Mock(),
+                        execv=Mock(side_effect=SystemExit),
+                        dependency_checker=Mock(return_value=health),
+                    )
+            finally:
+                os.chdir(previous_cwd)
+
+            status = loads((root / "status.json").read_text())
+            self.assertEqual(status["state"], "completed")
+            self.assertEqual(status["environment_delta"]["new_count"], 0)
 
     def test_failed_paired_update_rolls_back_commit_and_requirements(self):
         with tempfile.TemporaryDirectory() as directory:
@@ -319,12 +470,51 @@ class UpdateWorkerTests(unittest.TestCase):
                         self._plan(root),
                         runner=runner,
                         execv=Mock(side_effect=SystemExit),
+                        dependency_checker=Mock(
+                            return_value={
+                                "available": True,
+                                "status": "warnings",
+                                "issue_count": 1,
+                                "issues": ["existing conflict"],
+                            }
+                        ),
                     )
             finally:
                 os.chdir(previous_cwd)
 
             self.assertIn(["git", "checkout", "--detach", "old-commit"], commands)
             self.assertEqual(loads((root / "status.json").read_text())["state"], "rolled_back")
+
+    def test_unverifiable_rollback_is_reported_honestly(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+
+            def runner(command, **kwargs):
+                if command[:4] == ["python-test", "-s", "-m", "pip"] and command[-1].endswith(
+                    "requirements.txt"
+                ):
+                    raise RuntimeError("pip failed")
+
+            unavailable = {
+                "available": False,
+                "status": "unavailable",
+                "issue_count": None,
+                "issues": [],
+            }
+            previous_cwd = Path.cwd()
+            try:
+                with self.assertRaises(SystemExit):
+                    update_worker.run(
+                        self._plan(root),
+                        runner=runner,
+                        execv=Mock(side_effect=SystemExit),
+                        dependency_checker=Mock(return_value=unavailable),
+                    )
+            finally:
+                os.chdir(previous_cwd)
+
+            status = loads((root / "status.json").read_text())
+            self.assertEqual(status["state"], "rollback_unverified")
 
 
 if __name__ == "__main__":

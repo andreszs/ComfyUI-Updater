@@ -163,7 +163,8 @@ async def update(request: web.Request) -> web.Response:
         return _json_response({"error": "Invalid JSON body"}, status=400)
     if (
         not isinstance(body, dict)
-        or set(body) != {"action"}
+        or set(body) != {"action", "rollback_on_conflicts"}
+        or not isinstance(body.get("rollback_on_conflicts"), bool)
         or body.get("action")
         not in {
             "update_core",
@@ -180,6 +181,7 @@ async def update(request: web.Request) -> web.Response:
         plan = await asyncio.to_thread(
             UPDATER.prepare,
             action=body["action"],
+            rollback_on_conflicts=body["rollback_on_conflicts"],
             launch_argv=RUNTIME.launch_argv(),
             launch_cwd=os.getcwd(),
         )
