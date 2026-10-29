@@ -7,6 +7,9 @@
 
 # ComfyUI Updater 🔄
 
+> [!WARNING]
+> **Active development:** This plugin is still under active development and is not yet recommended for production environments. Back up your ComfyUI installation before testing update operations.
+
 ComfyUI Updater adds a native **Updates** section to ComfyUI Settings. It manages only ComfyUI Core and the official frontend package; it does not inspect, install, or update custom nodes.
 
 ## Features

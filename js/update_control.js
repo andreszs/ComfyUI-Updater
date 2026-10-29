@@ -232,7 +232,7 @@ function renderUpdateSettings() {
     root.innerHTML = `
         <header class="andreszs-update-control-heading">
             <div>
-                <strong>ComfyUI updates</strong>
+                <strong>ComfyUI Updater</strong>
                 <span>Core and Frontend can be managed independently.</span>
             </div>
             <button type="button" data-update-check>Check for updates</button>
